@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #43e97b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2ecc71;
+    }
+
+    .mensagem {
+      margin-top: 10px;
+    }
+
+    .voltar {
+      margin-top: 10px;
+      display: block;
+      cursor: pointer;
+      color: blue;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h2>Cadastro</h2>
+
+    <form id="formCadastro">
+      <input type="text" id="nome" placeholder="Nome" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="senha" placeholder="Senha" required>
+
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <span class="voltar" onclick="voltar()">Voltar para login</span>
+
+    <div id="mensagem" class="mensagem"></div>
+  </div>
+
+  <script>
+    const mensagem = document.getElementById("mensagem");
+
+    document.getElementById("formCadastro").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      let nome = document.getElementById("nome").value;
+      let email = document.getElementById("email").value;
+      let senha = document.getElementById("senha").value;
+
+      fetch('http://localhost:3000/cadastro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, senha })
+      })
+      .then(res => res.text())
+      .then(data => {
+        mensagem.textContent = data;
+      })
+      .catch(() => {
+        mensagem.textContent = "Erro ao cadastrar";
+      });
+    });
+
+    function voltar(){
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>
