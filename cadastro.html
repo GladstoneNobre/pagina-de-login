@@ -79,33 +79,37 @@
   </div>
 
   <script>
-    const mensagem = document.getElementById("mensagem");
+  const API_URL = "https://backend-login-iwgo.onrender.com";
 
-    document.getElementById("formCadastro").addEventListener("submit", function(e) {
-      e.preventDefault();
+  const mensagem = document.getElementById("mensagem");
 
-      let nome = document.getElementById("nome").value;
-      let email = document.getElementById("email").value;
-      let senha = document.getElementById("senha").value;
+  document.getElementById("formCadastro").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-      fetch('http://localhost:3000/cadastro', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, senha })
-      })
-      .then(res => res.text())
-      .then(data => {
-        mensagem.textContent = data;
-      })
-      .catch(() => {
-        mensagem.textContent = "Erro ao cadastrar";
-      });
+    let nome = document.getElementById("nome").value;
+    let email = document.getElementById("email").value;
+    let senha = document.getElementById("senha").value;
+
+    fetch(`${API_URL}/cadastro`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, senha })
+    })
+    .then(res => res.json())
+    .then(data => {
+      mensagem.textContent = "Cadastro concluído";
+      mensagem.style.color = "green";
+    })
+    .catch(() => {
+      mensagem.textContent = "Erro ao cadastrar";
+      mensagem.style.color = "red";
     });
+  });
 
-    function voltar(){
-      window.location.href = "login.html";
-    }
-  </script>
+  function voltar(){
+    window.location.href = "login.html";
+  }
+</script>
 
 </body>
 </html>
