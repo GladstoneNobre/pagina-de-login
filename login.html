@@ -90,40 +90,40 @@
   </div>
 
   <script>
-    // LOGIN
+    const API_URL = "https://backend-login-iwgo.onrender.com";
+
     document.getElementById("formLogin").addEventListener("submit", function(e) {
-  e.preventDefault();
+      e.preventDefault();
 
-  let email = document.getElementById("email").value;
-  let senha = document.getElementById("senha").value;
+      let email = document.getElementById("email").value;
+      let senha = document.getElementById("senha").value;
 
-  if(email === "" || senha === ""){
-    alert("Preencha todos os campos!");
-    return;
-  }
+      if (email === "" || senha === "") {
+        alert("Preencha todos os campos!");
+        return;
+      }
 
-  fetch('http://localhost:3000/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ email, senha })
-  })
-  .then(res => res.text())
-  .then(data => {
-  if (data === "Login OK") {
-    window.location.href = "usuarios.html";
-  } else {
-    alert(data);
-  }
-})
-  .catch(err => {
-    console.error(err);
-    alert("Erro ao conectar com o servidor");
-  });
-});
+      fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, senha })
+      })
+      .then(res => res.text())
+      .then(data => {
+        if (data === "Login OK") {
+          window.location.href = "usuarios.html";
+        } else {
+          alert(data);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao conectar com o servidor");
+      });
+    });
 
-    // MOSTRAR / OCULTAR SENHA
     document.getElementById("toggleSenha").addEventListener("click", function() {
       let senhaInput = document.getElementById("senha");
 
@@ -136,28 +136,9 @@
       }
     });
 
-    // BOTÃO CADASTRAR
     document.getElementById("cadastrar").addEventListener("click", function() {
-  window.location.href = "cadastro.html";
-});
-
-  fetch('http://localhost:3000/cadastro', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ nome, email, senha })
-  })
-  .then(res => res.text())
-  .then(data => {
-    alert(data);
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Erro ao cadastrar");
-  });
-;
-      
+      window.location.href = "cadastro.html";
+    });
   </script>
 
 </body>
