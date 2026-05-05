@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuários - Listar</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+    }
+
+    nav {
+      background: #0d6efd;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      font-size: 22px;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+    }
+
+    .container {
+      background: white;
+      margin: 30px;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      font-weight: normal;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      margin-right: 8px;
+      font-size: 15px;
+    }
+
+    .btn-azul {
+      background: #0d6efd;
+    }
+
+    .btn-vermelho {
+      background: #dc3545;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th {
+      background: #cfe2ff;
+      padding: 12px;
+      text-align: left;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    tr:nth-child(even) {
+      background: #f1f1f1;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #0d6efd;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+
+    .form-box {
+      margin-top: 20px;
+      display: none;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    input, select {
+      padding: 10px;
+      margin: 5px;
+      width: 250px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">Savir Sistemas</div>
+    <div>
+      <a href="#">Início</a>
+      <a href="#">Cadastros</a>
+      <a href="#">Sobre</a>
+      <a href="#">Serviços</a>
+      <a href="#">Contato</a>
+      <a href="login.html">Sair</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Usuários - Listar</h1>
+
+    <button class="btn-azul" onclick="mostrarFormulario()">Incluir</button>
+    <button class="btn-azul" onclick="editarUsuario()">Editar</button>
+    <button class="btn-vermelho" onclick="excluirUsuario()">Excluir</button>
+    <button class="btn-azul" onclick="window.print()">Imprimir</button>
+
+    <div class="form-box" id="formBox">
+      <input type="hidden" id="usuarioId">
+      <input type="text" id="nome" placeholder="Nome">
+      <input type="email" id="email" placeholder="E-mail">
+      <input type="password" id="senha" placeholder="Senha">
+      <select id="perfil">
+        <option value="Usuário">Usuário</option>
+        <option value="Administrador">Administrador</option>
+      </select>
+      <button class="btn-azul" onclick="salvarUsuario()">Salvar</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Perfil</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaUsuarios"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    © 2025 Savir Sistemas - Todos os direitos reservados
+  </footer>
+
+  <script>
+    const API_URL = "https://backend-login-iwgo.onrender.com";
+
+    function carregarUsuarios() {
+      fetch(`${API_URL}/usuarios`)
+        .then(res => res.json())
+        .then(usuarios => {
+          const tabela = document.getElementById("tabelaUsuarios");
+          tabela.innerHTML = "";
+
+          usuarios.forEach(usuario => {
+            tabela.innerHTML += `
+              <tr>
+                <td><input type="radio" name="selecionado" value="${usuario.id}"></td>
+                <td>${usuario.id}</td>
+                <td>${usuario.nome}</td>
+                <td>${usuario.email}</td>
+                <td>${usuario.perfil || "Usuário"}</td>
+              </tr>
+            `;
+          });
+        });
+    }
+
+    function mostrarFormulario() {
+      document.getElementById("formBox").style.display = "block";
+      document.getElementById("usuarioId").value = "";
+      document.getElementById("nome").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("senha").value = "";
+      document.getElementById("perfil").value = "Usuário";
+    }
+
+    function salvarUsuario() {
+      const id = document.getElementById("usuarioId").value;
+      const nome = document.getElementById("nome").value;
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+      const perfil = document.getElementById("perfil").value;
+
+      const metodo = id ? "PUT" : "POST";
+      const url = id ? `${API_URL}/usuarios/${id}` : `${API_URL}/usuarios`;
+
+      fetch(url, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, email, senha, perfil })
+      })
+      .then(res => res.json())
+      .then(() => {
+        alert("Usuário salvo com sucesso");
+        document.getElementById("formBox").style.display = "none";
+        carregarUsuarios();
+      });
+    }
+
+    function editarUsuario() {
+      const selecionado = document.querySelector('input[name="selecionado"]:checked');
+
+      if (!selecionado) {
+        alert("Selecione um usuário para editar");
+        return;
+      }
+
+      const linha = selecionado.closest("tr");
+
+      document.getElementById("formBox").style.display = "block";
+      document.getElementById("usuarioId").value = linha.children[1].textContent;
+      document.getElementById("nome").value = linha.children[2].textContent;
+      document.getElementById("email").value = linha.children[3].textContent;
+      document.getElementById("senha").value = "";
+      document.getElementById("perfil").value = linha.children[4].textContent;
+    }
+
+    function excluirUsuario() {
+      const selecionado = document.querySelector('input[name="selecionado"]:checked');
+
+      if (!selecionado) {
+        alert("Selecione um usuário para excluir");
+        return;
+      }
+
+      const id = selecionado.value;
+
+      if (confirm("Deseja excluir este usuário?")) {
+        fetch(`${API_URL}/usuarios/${id}`, {
+          method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(() => {
+          alert("Usuário excluído com sucesso");
+          carregarUsuarios();
+        });
+      }
+    }
+
+    carregarUsuarios();
+  </script>
+
+</body>
+</html>
