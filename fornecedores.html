@@ -117,39 +117,86 @@ Cadastrar
 
 <script>
 
-let id = 1;
+
+
+const API_URL = "https://backend-login-iwgo.onrender.com";
+
+function carregarFornecedores() {
+
+  fetch(`${API_URL}/fornecedores`)
+    .then(res => res.json())
+    .then(fornecedores => {
+
+      const tabela = document.getElementById("tabelaFornecedores");
+
+      tabela.innerHTML = "";
+
+      fornecedores.forEach(f => {
+
+        tabela.innerHTML += `
+          <tr>
+            <td>${f.id}</td>
+            <td>${f.marca}</td>
+            <td>${f.cnpj}</td>
+            <td>${f.telefone}</td>
+            <td>${f.categoria}</td>
+          </tr>
+        `;
+
+      });
+
+    });
+
+}
 
 function adicionarFornecedor(){
 
-let marca = document.getElementById("marca").value;
-let cnpj = document.getElementById("cnpj").value;
-let telefone = document.getElementById("telefone").value;
-let categoria = document.getElementById("categoria").value;
+  let marca = document.getElementById("marca").value;
+  let cnpj = document.getElementById("cnpj").value;
+  let telefone = document.getElementById("telefone").value;
+  let categoria = document.getElementById("categoria").value;
 
-if(marca == "" || cnpj == "" || telefone == ""){
-  alert("Preencha todos os campos");
-  return;
+  if(marca == "" || cnpj == "" || telefone == ""){
+    alert("Preencha todos os campos");
+    return;
+  }
+
+  fetch(`${API_URL}/fornecedores`, {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      marca,
+      cnpj,
+      telefone,
+      categoria
+    })
+
+  })
+
+  .then(res => res.json())
+
+  .then(data => {
+
+    alert(data.mensagem);
+
+    document.getElementById("marca").value = "";
+    document.getElementById("cnpj").value = "";
+    document.getElementById("telefone").value = "";
+
+    carregarFornecedores();
+
+  });
+
 }
 
-let tabela = document.getElementById("tabelaFornecedores");
+carregarFornecedores();
 
-tabela.innerHTML += `
-<tr>
-<td>${id}</td>
-<td>${marca}</td>
-<td>${cnpj}</td>
-<td>${telefone}</td>
-<td>${categoria}</td>
-</tr>
-`;
 
-id++;
-
-document.getElementById("marca").value = "";
-document.getElementById("cnpj").value = "";
-document.getElementById("telefone").value = "";
-
-}
 
 </script>
 
