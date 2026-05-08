@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Cadastro de Fornecedores</title>
+
+<style>
+body{
+  font-family: Arial;
+  margin:0;
+  background:#f4f4f4;
+}
+
+.topo{
+  background:#007bff;
+  color:white;
+  padding:15px;
+  font-size:24px;
+}
+
+.container{
+  width:90%;
+  margin:auto;
+  margin-top:30px;
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+input, select{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:1px solid #ccc;
+  border-radius:5px;
+}
+
+button{
+  margin-top:15px;
+  padding:10px 20px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  background:#007bff;
+  color:white;
+}
+
+button:hover{
+  background:#0056b3;
+}
+
+table{
+  width:100%;
+  margin-top:30px;
+  border-collapse:collapse;
+}
+
+th, td{
+  border:1px solid #ccc;
+  padding:10px;
+  text-align:center;
+}
+
+th{
+  background:#007bff;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topo">
+Cadastro de Fornecedores
+</div>
+
+<div class="container">
+
+<h2>Novo Fornecedor</h2>
+
+<input type="text" id="marca" placeholder="Marca">
+
+<input type="text" id="cnpj" placeholder="CNPJ">
+
+<input type="text" id="telefone" placeholder="Telefone">
+
+<select id="categoria">
+<option>Hidráulica</option>
+<option>Elétrica</option>
+<option>Cimento</option>
+<option>Tintas</option>
+<option>Ferramentas</option>
+</select>
+
+<button onclick="adicionarFornecedor()">
+Cadastrar
+</button>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Marca</th>
+<th>CNPJ</th>
+<th>Telefone</th>
+<th>Categoria</th>
+</tr>
+</thead>
+
+<tbody id="tabelaFornecedores">
+
+</tbody>
+</table>
+
+</div>
+
+<script>
+
+let id = 1;
+
+function adicionarFornecedor(){
+
+let marca = document.getElementById("marca").value;
+let cnpj = document.getElementById("cnpj").value;
+let telefone = document.getElementById("telefone").value;
+let categoria = document.getElementById("categoria").value;
+
+if(marca == "" || cnpj == "" || telefone == ""){
+  alert("Preencha todos os campos");
+  return;
+}
+
+let tabela = document.getElementById("tabelaFornecedores");
+
+tabela.innerHTML += `
+<tr>
+<td>${id}</td>
+<td>${marca}</td>
+<td>${cnpj}</td>
+<td>${telefone}</td>
+<td>${categoria}</td>
+</tr>
+`;
+
+id++;
+
+document.getElementById("marca").value = "";
+document.getElementById("cnpj").value = "";
+document.getElementById("telefone").value = "";
+
+}
+
+</script>
+
+</body>
+</html>
