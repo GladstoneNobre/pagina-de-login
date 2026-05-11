@@ -78,7 +78,9 @@ Cadastro de Fornecedores
 <div class="container">
 
 <h2>Novo Fornecedor</h2>
-
+  
+<input type="hidden" id="fornecedor_id">
+  
 <input type="text" id="marca" placeholder="Marca">
 
 <input type="text" id="cnpj" placeholder="CNPJ">
@@ -93,9 +95,11 @@ Cadastro de Fornecedores
 <option>Ferramentas</option>
 </select>
 
-<button onclick="adicionarFornecedor()">
-Cadastrar
-</button>
+<button onclick="incluirFornecedor()">Incluir</button>
+<button onclick="editarFornecedor()">Editar</button>
+<button onclick="salvarEdicaoFornecedor()">Salvar edição</button>
+<button class="btn-vermelho" onclick="excluirFornecedor()">Excluir selecionado</button>
+<button onclick="window.location.href='home.html'">Voltar</button>
 
 <table>
 <thead>
@@ -119,79 +123,145 @@ Cadastrar
 
 
 
+
 const API_URL = "https://backend-login-iwgo.onrender.com";
 
 function carregarFornecedores() {
-
   fetch(`${API_URL}/fornecedores`)
     .then(res => res.json())
     .then(fornecedores => {
-
       const tabela = document.getElementById("tabelaFornecedores");
-
       tabela.innerHTML = "";
 
       fornecedores.forEach(f => {
-
         tabela.innerHTML += `
-          <tr>
+          <tr onclick="selecionarFornecedor(${f.id})">
+            <td><input type="radio" name="selecionado" value="${f.id}"></td>
             <td>${f.id}</td>
-            <td>${f.marca}</td>
-            <td>${f.cnpj}</td>
-            <td>${f.telefone}</td>
-            <td>${f.categoria}</td>
+            <td>${f.marca || ""}</td>
+            <td>${f.cnpj || ""}</td>
+            <td>${f.telefone || ""}</td>
+            <td>${f.categoria || ""}</td>
           </tr>
         `;
-
       });
-
     });
-
 }
 
-function adicionarFornecedor(){
+function montarFornecedor() {
+  return {
+    marca: document.getElementById("marca").value,
+    cnpj: document.getElementById("cnpj").value,
+    telefone: document.getElementById("telefone").value,
+    categoria: document.getElementById("categoria").value
+  };
+}
 
-  let marca = document.getElementById("marca").value;
-  let cnpj = document.getElementById("cnpj").value;
-  let telefone = document.getElementById("telefone").value;
-  let categoria = document.getElementById("categoria").value;
+function incluirFornecedor() {
+  const fornecedor = montarFornecedor();
 
-  if(marca == "" || cnpj == "" || telefone == ""){
+  if (!fornecedor.marca || !fornecedor.cnpj || !fornecedor.telefone) {
     alert("Preencha todos os campos");
     return;
   }
 
   fetch(`${API_URL}/fornecedores`, {
-
     method: "POST",
-
-    headers: {
-      "Content-Type": "application/json"
-    },
-
-    body: JSON.stringify({
-      marca,
-      cnpj,
-      telefone,
-      categoria
-    })
-
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(fornecedor)
   })
-
   .then(res => res.json())
-
   .then(data => {
-
-    alert(data.mensagem);
-
-    document.getElementById("marca").value = "";
-    document.getElementById("cnpj").value = "";
-    document.getElementById("telefone").value = "";
-
+    alert(data.mensagem || data.erro || "Fornecedor incluído");
+    limparCamposFornecedor();
     carregarFornecedores();
-
+  })
+  .catch(() => {
+    alert("Erro ao incluir fornecedor");
   });
+}
 
+function editarFornecedor() {
+  const selecionado = document.querySelector('input[name="selecionado"]:checked');
+
+  if (!selecionado) {
+    alert("Selecione um fornecedor para editar");
+    return;
+  }
+
+  selecionarFornecedor(Number(selecionado.value));
+  alert("Agora altere os campos e clique em Salvar edição");
+}
+
+function salvarEdicaoFornecedor() {
+  const id = document.getElementById("fornecedor_id").value;
+
+  if (!id) {
+    alert("Selecione um fornecedor antes de salvar a edição");
+    return;
+  }
+
+  const fornecedor = montarFornecedor();
+
+  fetch(`${API_URL}/fornecedores/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(fornecedor)
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.mensagem || data.erro || "Fornecedor atualizado");
+    limparCamposFornecedor();
+    carregarFornecedores();
+  })
+  .catch(() => {
+    alert("Erro ao editar fornecedor");
+  });
+}
+
+function selecionarFornecedor(id) {
+  fetch(`${API_URL}/fornecedores`)
+    .then(res => res.json())
+    .then(fornecedores => {
+      const fornecedor = fornecedores.find(f => f.id === id);
+
+      if (!fornecedor) return;
+
+      document.getElementById("fornecedor_id").value = fornecedor.id;
+      document.getElementById("marca").value = fornecedor.marca || "";
+      document.getElementById("cnpj").value = fornecedor.cnpj || "";
+      document.getElementById("telefone").value = fornecedor.telefone || "";
+      document.getElementById("categoria").value = fornecedor.categoria || "";
+    });
+}
+
+function excluirFornecedor() {
+  const id = document.getElementById("fornecedor_id").value;
+
+  if (!id) {
+    alert("Selecione um fornecedor para excluir");
+    return;
+  }
+
+  if (confirm("Deseja excluir este fornecedor?")) {
+    fetch(`${API_URL}/fornecedores/${id}`, {
+      method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.mensagem || data.erro || "Fornecedor excluído");
+      limparCamposFornecedor();
+      carregarFornecedores();
+    });
+  }
+}
+
+function limparCamposFornecedor() {
+  document.getElementById("fornecedor_id").value = "";
+  document.getElementById("marca").value = "";
+  document.getElementById("cnpj").value = "";
+  document.getElementById("telefone").value = "";
+  document.getElementById("categoria").value = "Hidráulica";
 }
 
 carregarFornecedores();
