@@ -72,6 +72,14 @@
       background: #b02a37;
       transform: scale(1.03);
     }
+    .contas {
+  background: #6f42c1;
+}
+
+.contas:hover {
+  background: #56319a;
+  transform: scale(1.03);
+}
   </style>
 </head>
 
@@ -96,6 +104,9 @@
     <button class="btn fornecedores" onclick="irContasPagar()">
   Contas a Pagar
 </button>
+    <button class="btn contas" onclick="irContas()">
+  Contas a Pagar
+</button>
   </div>
 
   <script>
@@ -112,6 +123,9 @@
       window.location.href = "login.html";
     }
     function irContasPagar() {
+  window.location.href = "contas.html";
+}
+    function irContas() {
   window.location.href = "contas.html";
 }
 
