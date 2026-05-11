@@ -111,9 +111,11 @@
 
     <input type="text" id="fornecedor_id" placeholder="ID do fornecedor">
 
-    <button onclick="salvarConta()">Incluir / Salvar</button>
-    <button class="btn-vermelho" onclick="excluirConta()">Excluir selecionada</button>
-    <button onclick="window.location.href='home.html'">Voltar</button>
+    <button onclick="novaConta()">Incluir</button>
+<button onclick="editarConta()">Editar</button>
+<button onclick="salvarConta()">Salvar</button>
+<button class="btn-vermelho" onclick="excluirConta()">Excluir selecionada</button>
+<button onclick="window.location.href='home.html'">Voltar</button>
 
     <table>
       <thead>
@@ -138,7 +140,22 @@
 
   <script>
     const API_URL = "https://backend-login-iwgo.onrender.com";
+function novaConta() {
+  limparCampos();
+  alert("Preencha os campos para incluir uma nova conta");
+}
 
+function editarConta() {
+  const selecionado = document.querySelector('input[name="selecionado"]:checked');
+
+  if (!selecionado) {
+    alert("Selecione uma conta na tabela para editar");
+    return;
+  }
+
+  selecionarConta(Number(selecionado.value));
+  alert("Agora edite os campos e clique em Salvar");
+}
     function carregarContas() {
       fetch(`${API_URL}/contas-pagar`)
         .then(res => res.json())
