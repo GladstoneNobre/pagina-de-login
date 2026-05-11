@@ -102,19 +102,18 @@ Cadastro de Fornecedores
 <button onclick="window.location.href='home.html'">Voltar</button>
 
 <table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Marca</th>
-<th>CNPJ</th>
-<th>Telefone</th>
-<th>Categoria</th>
-</tr>
-</thead>
+  <thead>
+    <tr>
+      <th>Selecionar</th>
+      <th>ID</th>
+      <th>Marca</th>
+      <th>CNPJ</th>
+      <th>Telefone</th>
+      <th>Categoria</th>
+    </tr>
+  </thead>
 
-<tbody id="tabelaFornecedores">
-
-</tbody>
+  <tbody id="tabelaFornecedores"></tbody>
 </table>
 
 </div>
@@ -135,15 +134,15 @@ function carregarFornecedores() {
 
       fornecedores.forEach(f => {
         tabela.innerHTML += `
-          <tr onclick="selecionarFornecedor(${f.id})">
-            <td><input type="radio" name="selecionado" value="${f.id}"></td>
-            <td>${f.id}</td>
-            <td>${f.marca || ""}</td>
-            <td>${f.cnpj || ""}</td>
-            <td>${f.telefone || ""}</td>
-            <td>${f.categoria || ""}</td>
-          </tr>
-        `;
+  <tr onclick="selecionarFornecedor(${f.id})">
+    <td><input type="radio" name="selecionado" value="${f.id}"></td>
+    <td>${f.id}</td>
+    <td>${f.marca || ""}</td>
+    <td>${f.cnpj || ""}</td>
+    <td>${f.telefone || ""}</td>
+    <td>${f.categoria || ""}</td>
+  </tr>
+`;
       });
     });
 }
