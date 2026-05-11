@@ -34,6 +34,7 @@
       margin-top: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      box-sizing: border-box;
     }
 
     button {
@@ -44,6 +45,7 @@
       cursor: pointer;
       background: #007bff;
       color: white;
+      margin-right: 5px;
     }
 
     button:hover {
@@ -91,33 +93,44 @@
 
     <input type="number" id="valor" placeholder="Valor">
 
-    <input type="number" id="data_vencimento" placeholder="Data de vencimento Ex: 20250510">
+    <input type="number" id="data_vencimento" placeholder="Data vencimento Ex: 20250510">
 
-    <input type="number" id="data_pagamento" placeholder="Data de pagamento Ex: 20250515">
+    <input type="number" id="data_pagamento" placeholder="Data pagamento Ex: 20250515">
 
-    <input type="text" id="tipo_titulo_id" placeholder="ID do tipo de título">
+    <input type="text" id="tipo_titulo_id" placeholder="ID tipo título">
 
-    <input type="text" id="atualizado_por" placeholder="ID do usuário que atualizou">
+    <input type="text" id="atualizado_por" placeholder="ID usuário">
 
     <input type="number" id="atualizado_em" placeholder="Atualizado em Ex: 20250511">
 
-    <input type="text" id="emprestimo_id" placeholder="ID do empréstimo">
+    <input type="text" id="emprestimo_id" placeholder="ID empréstimo">
 
-    <input type="text" id="funcionario_id" placeholder="ID do funcionário">
+    <input type="text" id="funcionario_id" placeholder="ID funcionário">
 
-    <input type="text" id="cliente_id" placeholder="ID do cliente">
+    <input type="text" id="cliente_id" placeholder="ID cliente">
 
-    <input type="text" id="viagem_id" placeholder="ID da viagem">
+    <input type="text" id="viagem_id" placeholder="ID viagem">
 
-    <input type="text" id="fornecedor_id" placeholder="ID do fornecedor">
+    <input type="text" id="fornecedor_id" placeholder="ID fornecedor">
 
-   <button onclick="novaConta()">Nova</button>
-<button onclick="incluirConta()">Incluir</button>
-<button onclick="editarConta()">Editar</button>
-<button onclick="salvarEdicaoConta()">Salvar edição</button>
-<button class="btn-vermelho" onclick="excluirConta()">Excluir selecionada</button>
-<button onclick="window.location.href='home.html'">Voltar</button>
+    <button onclick="novaConta()">Nova</button>
+
+    <button onclick="incluirConta()">Incluir</button>
+
+    <button onclick="editarConta()">Editar</button>
+
+    <button onclick="salvarEdicaoConta()">Salvar edição</button>
+
+    <button class="btn-vermelho" onclick="excluirConta()">
+      Excluir
+    </button>
+
+    <button onclick="window.location.href='home.html'">
+      Voltar
+    </button>
+
     <table>
+
       <thead>
         <tr>
           <th></th>
@@ -134,185 +147,261 @@
       </thead>
 
       <tbody id="tabelaContas"></tbody>
+
     </table>
 
   </div>
 
   <script>
+
     const API_URL = "https://backend-login-iwgo.onrender.com";
-function montarConta() {
-  return {
-    valor: document.getElementById("valor").value || null,
-    data_vencimento: document.getElementById("data_vencimento").value || null,
-    data_pagamento: document.getElementById("data_pagamento").value || null,
-    tipo_titulo_id: document.getElementById("tipo_titulo_id").value || null,
-    atualizado_por: document.getElementById("atualizado_por").value || null,
-    atualizado_em: document.getElementById("atualizado_em").value || null,
-    emprestimo_id: document.getElementById("emprestimo_id").value || null,
-    funcionario_id: document.getElementById("funcionario_id").value || null,
-    cliente_id: document.getElementById("cliente_id").value || null,
-    viagem_id: document.getElementById("viagem_id").value || null,
-    fornecedor_id: document.getElementById("fornecedor_id").value || null
-  };
-}
 
-function novaConta() {
-  limparCampos();
-  alert("Preencha os campos e clique em Incluir para salvar uma nova conta");
-}
+    function montarConta() {
 
-function incluirConta() {
-  const conta = montarConta();
+      return {
+        valor: document.getElementById("valor").value || null,
+        data_vencimento: document.getElementById("data_vencimento").value || null,
+        data_pagamento: document.getElementById("data_pagamento").value || null,
+        tipo_titulo_id: document.getElementById("tipo_titulo_id").value || null,
+        atualizado_por: document.getElementById("atualizado_por").value || null,
+        atualizado_em: document.getElementById("atualizado_em").value || null,
+        emprestimo_id: document.getElementById("emprestimo_id").value || null,
+        funcionario_id: document.getElementById("funcionario_id").value || null,
+        cliente_id: document.getElementById("cliente_id").value || null,
+        viagem_id: document.getElementById("viagem_id").value || null,
+        fornecedor_id: document.getElementById("fornecedor_id").value || null
+      };
 
-  if (!conta.valor) {
-    alert("Preencha pelo menos o valor da conta");
-    return;
-  }
-
-  fetch(`${API_URL}/contas-pagar`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(conta)
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.mensagem || data.erro || "Conta incluída com sucesso");
-    limparCampos();
-    carregarContas();
-  })
-  .catch(() => {
-    alert("Erro ao incluir conta");
-  });
-}
-
-function editarConta() {
-  const selecionado = document.querySelector('input[name="selecionado"]:checked');
-
-  if (!selecionado) {
-    alert("Selecione uma conta na tabela para editar");
-    return;
-  }
-
-  selecionarConta(Number(selecionado.value));
-  alert("Agora altere os campos e clique em Salvar edição");
-}
-
-function salvarEdicaoConta() {
-  const id = document.getElementById("conta_pagar_id").value;
-
-  if (!id) {
-    alert("Selecione uma conta antes de salvar a edição");
-    return;
-  }
-
-  const conta = montarConta();
-
-  fetch(`${API_URL}/contas-pagar/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(conta)
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.mensagem || data.erro || "Conta atualizada com sucesso");
-    limparCampos();
-    carregarContas();
-  })
-  .catch(() => {
-    alert("Erro ao editar conta");
-  });
-}
-
-function carregarContas() {
-  fetch(`${API_URL}/contas-pagar`)
-    .then(res => res.json())
-    .then(contas => {
-      const tabela = document.getElementById("tabelaContas");
-      tabela.innerHTML = "";
-
-      contas.forEach(c => {
-        tabela.innerHTML += `
-          <tr onclick="selecionarConta(${c.conta_pagar_id})">
-            <td><input type="radio" name="selecionado" value="${c.conta_pagar_id}"></td>
-            <td>${c.conta_pagar_id}</td>
-            <td>${c.valor || ""}</td>
-            <td>${c.data_vencimento || ""}</td>
-            <td>${c.data_pagamento || ""}</td>
-            <td>${c.tipo_titulo_id || ""}</td>
-            <td>${c.atualizado_por || ""}</td>
-            <td>${c.funcionario_id || ""}</td>
-            <td>${c.cliente_id || ""}</td>
-            <td>${c.fornecedor_id || ""}</td>
-          </tr>
-        `;
-      });
-    });
-}
-
-      const metodo = id ? "PUT" : "POST";
-      const url = id ? `${API_URL}/contas-pagar/${id}` : `${API_URL}/contas-pagar`;
-
-      fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(conta)
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.mensagem);
-        limparCampos();
-        carregarContas();
-      })
-      .catch(() => {
-        alert("Erro ao salvar conta");
-      });
     }
 
-    function selecionarConta(id) {
-      fetch(`${API_URL}/contas-pagar`)
-        .then(res => res.json())
-        .then(contas => {
-          const conta = contas.find(c => c.conta_pagar_id === id);
+    function novaConta() {
 
-          if (!conta) return;
+      limparCampos();
 
-          document.getElementById("conta_pagar_id").value = conta.conta_pagar_id;
-          document.getElementById("valor").value = conta.valor || "";
-          document.getElementById("data_vencimento").value = conta.data_vencimento || "";
-          document.getElementById("data_pagamento").value = conta.data_pagamento || "";
-          document.getElementById("tipo_titulo_id").value = conta.tipo_titulo_id || "";
-          document.getElementById("atualizado_por").value = conta.atualizado_por || "";
-          document.getElementById("atualizado_em").value = conta.atualizado_em || "";
-          document.getElementById("emprestimo_id").value = conta.emprestimo_id || "";
-          document.getElementById("funcionario_id").value = conta.funcionario_id || "";
-          document.getElementById("cliente_id").value = conta.cliente_id || "";
-          document.getElementById("viagem_id").value = conta.viagem_id || "";
-          document.getElementById("fornecedor_id").value = conta.fornecedor_id || "";
-        });
+      alert("Preencha os campos e clique em Incluir");
+
     }
 
-    function excluirConta() {
-      const id = document.getElementById("conta_pagar_id").value;
+    function incluirConta() {
 
-      if (!id) {
-        alert("Selecione uma conta para excluir");
+      const conta = montarConta();
+
+      if (!conta.valor) {
+        alert("Preencha o valor");
         return;
       }
 
-      if (confirm("Deseja excluir esta conta?")) {
-        fetch(`${API_URL}/contas-pagar/${id}`, {
-          method: "DELETE"
-        })
-        .then(res => res.json())
-        .then(data => {
-          alert(data.mensagem);
-          limparCampos();
-          carregarContas();
-        });
+      fetch(`${API_URL}/contas-pagar`, {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(conta)
+
+      })
+
+      .then(res => res.json())
+
+      .then(data => {
+
+        alert(data.mensagem || data.erro || "Conta incluída");
+
+        limparCampos();
+
+        carregarContas();
+
+      })
+
+      .catch(() => {
+
+        alert("Erro ao incluir conta");
+
+      });
+
+    }
+
+    function editarConta() {
+
+      const selecionado = document.querySelector('input[name="selecionado"]:checked');
+
+      if (!selecionado) {
+
+        alert("Selecione uma conta");
+
+        return;
+
       }
+
+      selecionarConta(Number(selecionado.value));
+
+      alert("Agora altere os campos e clique em Salvar edição");
+
+    }
+
+    function salvarEdicaoConta() {
+
+      const id = document.getElementById("conta_pagar_id").value;
+
+      if (!id) {
+
+        alert("Selecione uma conta");
+
+        return;
+
+      }
+
+      const conta = montarConta();
+
+      fetch(`${API_URL}/contas-pagar/${id}`, {
+
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(conta)
+
+      })
+
+      .then(res => res.json())
+
+      .then(data => {
+
+        alert(data.mensagem || data.erro || "Conta atualizada");
+
+        limparCampos();
+
+        carregarContas();
+
+      })
+
+      .catch(() => {
+
+        alert("Erro ao editar conta");
+
+      });
+
+    }
+
+    function carregarContas() {
+
+      fetch(`${API_URL}/contas-pagar`)
+
+      .then(res => res.json())
+
+      .then(contas => {
+
+        const tabela = document.getElementById("tabelaContas");
+
+        tabela.innerHTML = "";
+
+        contas.forEach(c => {
+
+          tabela.innerHTML += `
+            <tr onclick="selecionarConta(${c.conta_pagar_id})">
+
+              <td>
+                <input type="radio" name="selecionado" value="${c.conta_pagar_id}">
+              </td>
+
+              <td>${c.conta_pagar_id}</td>
+
+              <td>${c.valor || ""}</td>
+
+              <td>${c.data_vencimento || ""}</td>
+
+              <td>${c.data_pagamento || ""}</td>
+
+              <td>${c.tipo_titulo_id || ""}</td>
+
+              <td>${c.atualizado_por || ""}</td>
+
+              <td>${c.funcionario_id || ""}</td>
+
+              <td>${c.cliente_id || ""}</td>
+
+              <td>${c.fornecedor_id || ""}</td>
+
+            </tr>
+          `;
+
+        });
+
+      });
+
+    }
+
+    function selecionarConta(id) {
+
+      fetch(`${API_URL}/contas-pagar`)
+
+      .then(res => res.json())
+
+      .then(contas => {
+
+        const conta = contas.find(c => c.conta_pagar_id === id);
+
+        if (!conta) return;
+
+        document.getElementById("conta_pagar_id").value = conta.conta_pagar_id;
+        document.getElementById("valor").value = conta.valor || "";
+        document.getElementById("data_vencimento").value = conta.data_vencimento || "";
+        document.getElementById("data_pagamento").value = conta.data_pagamento || "";
+        document.getElementById("tipo_titulo_id").value = conta.tipo_titulo_id || "";
+        document.getElementById("atualizado_por").value = conta.atualizado_por || "";
+        document.getElementById("atualizado_em").value = conta.atualizado_em || "";
+        document.getElementById("emprestimo_id").value = conta.emprestimo_id || "";
+        document.getElementById("funcionario_id").value = conta.funcionario_id || "";
+        document.getElementById("cliente_id").value = conta.cliente_id || "";
+        document.getElementById("viagem_id").value = conta.viagem_id || "";
+        document.getElementById("fornecedor_id").value = conta.fornecedor_id || "";
+
+      });
+
+    }
+
+    function excluirConta() {
+
+      const id = document.getElementById("conta_pagar_id").value;
+
+      if (!id) {
+
+        alert("Selecione uma conta");
+
+        return;
+
+      }
+
+      if (confirm("Deseja excluir esta conta?")) {
+
+        fetch(`${API_URL}/contas-pagar/${id}`, {
+
+          method: "DELETE"
+
+        })
+
+        .then(res => res.json())
+
+        .then(data => {
+
+          alert(data.mensagem || data.erro || "Conta excluída");
+
+          limparCampos();
+
+          carregarContas();
+
+        });
+
+      }
+
     }
 
     function limparCampos() {
+
       document.getElementById("conta_pagar_id").value = "";
       document.getElementById("valor").value = "";
       document.getElementById("data_vencimento").value = "";
@@ -325,9 +414,11 @@ function carregarContas() {
       document.getElementById("cliente_id").value = "";
       document.getElementById("viagem_id").value = "";
       document.getElementById("fornecedor_id").value = "";
+
     }
 
     carregarContas();
+
   </script>
 
 </body>
