@@ -28,7 +28,7 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
-    input {
+    input, select  {
       width: 100%;
       padding: 10px;
       margin-top: 10px;
@@ -104,14 +104,20 @@
     <input type="number" id="atualizado_em" placeholder="Atualizado em Ex: 20250511">
 
     <input type="text" id="emprestimo_id" placeholder="ID empréstimo">
-
-    <input type="text" id="funcionario_id" placeholder="ID funcionário">
-
-    <input type="text" id="cliente_id" placeholder="ID cliente">
-
     <input type="text" id="viagem_id" placeholder="ID viagem">
 
-    <input type="text" id="fornecedor_id" placeholder="ID fornecedor">
+
+   <select id="funcionario_id">
+  <option value="">Selecione o funcionário</option>
+</select>
+
+<select id="cliente_id">
+  <option value="">Selecione o cliente</option>
+</select>
+
+<select id="fornecedor_id">
+  <option value="">Selecione o fornecedor</option>
+</select>
 
     <button onclick="novaConta()">Nova</button>
 
@@ -155,7 +161,21 @@
   <script>
 
     const API_URL = "https://backend-login-iwgo.onrender.com";
+function carregarPessoas() {
+  fetch(`${API_URL}/pessoas`)
+    .then(res => res.json())
+    .then(pessoas => {
+      const funcionario = document.getElementById("funcionario_id");
+      const cliente = document.getElementById("cliente_id");
+      const fornecedor = document.getElementById("fornecedor_id");
 
+      pessoas.forEach(p => {
+        funcionario.innerHTML += `<option value="${p.pessoa_id}">${p.nome}</option>`;
+        cliente.innerHTML += `<option value="${p.pessoa_id}">${p.nome}</option>`;
+        fornecedor.innerHTML += `<option value="${p.pessoa_id}">${p.nome}</option>`;
+      });
+    });
+}
     function montarConta() {
 
       return {
@@ -417,7 +437,8 @@
 
     }
 
-    carregarContas();
+    carregarPessoas();
+carregarContas();
 
   </script>
 
