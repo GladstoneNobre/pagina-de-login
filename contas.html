@@ -174,20 +174,34 @@
       });
     });
 }
-function carregarPessoas() {
-  fetch(`${API_URL}/pessoas`)
-    .then(res => res.json())
-    .then(pessoas => {
-      const funcionario = document.getElementById("funcionario_id");
-      const cliente = document.getElementById("cliente_id");
-      const fornecedor = document.getElementById("fornecedor_id");
+function carregarFuncionarios() {
 
-      pessoas.forEach(p => {
-        funcionario.innerHTML += `<option value="${p.pessoa_id}">${p.nome}</option>`;
-        cliente.innerHTML += `<option value="${p.pessoa_id}">${p.nome}</option>`;
-        fornecedor.innerHTML += `<option value="${p.pessoa_id}">${p.nome}</option>`;
+  fetch(`${API_URL}/funcionarios`)
+
+    .then(res => res.json())
+
+    .then(funcionarios => {
+
+      const funcionario = document.getElementById("funcionario_id");
+
+      funcionario.innerHTML = `
+        <option value="">
+          Selecione o funcionário
+        </option>
+      `;
+
+      funcionarios.forEach(f => {
+
+        funcionario.innerHTML += `
+          <option value="${f.id}">
+            ${f.nome}
+          </option>
+        `;
+
       });
+
     });
+
 }
     function montarConta() {
 
@@ -450,7 +464,7 @@ function carregarPessoas() {
 
     }
 
-    carregarPessoas();
+   carregarFuncionarios();
 carregarFornecedoresSelect();
 carregarContas();
 
