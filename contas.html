@@ -161,6 +161,19 @@
   <script>
 
     const API_URL = "https://backend-login-iwgo.onrender.com";
+    function carregarFornecedoresSelect() {
+  fetch(`${API_URL}/fornecedores-lista`)
+    .then(res => res.json())
+    .then(fornecedores => {
+      const fornecedor = document.getElementById("fornecedor_id");
+
+      fornecedor.innerHTML = '<option value="">Selecione o fornecedor</option>';
+
+      fornecedores.forEach(f => {
+        fornecedor.innerHTML += `<option value="${f.id}">${f.marca}</option>`;
+      });
+    });
+}
 function carregarPessoas() {
   fetch(`${API_URL}/pessoas`)
     .then(res => res.json())
@@ -438,6 +451,7 @@ function carregarPessoas() {
     }
 
     carregarPessoas();
+carregarFornecedoresSelect();
 carregarContas();
 
   </script>
