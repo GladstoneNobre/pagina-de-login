@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Contas a Pagar</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      background: #f4f4f4;
+    }
+
+    .topo {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      font-size: 24px;
+    }
+
+    .container {
+      width: 90%;
+      margin: auto;
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .btn-vermelho {
+      background: #dc3545;
+    }
+
+    .btn-vermelho:hover {
+      background: #b02a37;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topo">
+    Contas a Pagar
+  </div>
+
+  <div class="container">
+
+    <h2>Nova Conta</h2>
+
+    <input type="hidden" id="conta_pagar_id">
+
+    <input type="number" id="valor" placeholder="Valor">
+
+    <input type="number" id="data_vencimento" placeholder="Data de vencimento Ex: 20250510">
+
+    <input type="number" id="data_pagamento" placeholder="Data de pagamento Ex: 20250515">
+
+    <input type="number" id="tipo_titulo_id" placeholder="ID do tipo de título">
+
+    <input type="number" id="atualizado_por" placeholder="ID do usuário que atualizou">
+
+    <input type="number" id="atualizado_em" placeholder="Atualizado em Ex: 20250511">
+
+    <input type="number" id="emprestimo_id" placeholder="ID do empréstimo">
+
+    <input type="number" id="funcionario_id" placeholder="ID do funcionário">
+
+    <input type="number" id="cliente_id" placeholder="ID do cliente">
+
+    <input type="number" id="viagem_id" placeholder="ID da viagem">
+
+    <input type="number" id="fornecedor_id" placeholder="ID do fornecedor">
+
+    <button onclick="salvarConta()">Incluir / Salvar</button>
+    <button class="btn-vermelho" onclick="excluirConta()">Excluir selecionada</button>
+    <button onclick="window.location.href='home.html'">Voltar</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Valor</th>
+          <th>Vencimento</th>
+          <th>Pagamento</th>
+          <th>Tipo Título</th>
+          <th>Usuário</th>
+          <th>Funcionário</th>
+          <th>Cliente</th>
+          <th>Fornecedor</th>
+        </tr>
+      </thead>
+
+      <tbody id="tabelaContas"></tbody>
+    </table>
+
+  </div>
+
+  <script>
+    const API_URL = "https://backend-login-iwgo.onrender.com";
+
+    function carregarContas() {
+      fetch(`${API_URL}/contas-pagar`)
+        .then(res => res.json())
+        .then(contas => {
+          const tabela = document.getElementById("tabelaContas");
+          tabela.innerHTML = "";
+
+          contas.forEach(c => {
+            tabela.innerHTML += `
+              <tr onclick="selecionarConta(${c.conta_pagar_id})">
+                <td><input type="radio" name="selecionado" value="${c.conta_pagar_id}"></td>
+                <td>${c.conta_pagar_id}</td>
+                <td>${c.valor || ""}</td>
+                <td>${c.data_vencimento || ""}</td>
+                <td>${c.data_pagamento || ""}</td>
+                <td>${c.tipo_titulo_id || ""}</td>
+                <td>${c.atualizado_por || ""}</td>
+                <td>${c.funcionario_id || ""}</td>
+                <td>${c.cliente_id || ""}</td>
+                <td>${c.fornecedor_id || ""}</td>
+              </tr>
+            `;
+          });
+        });
+    }
+
+    function salvarConta() {
+      const id = document.getElementById("conta_pagar_id").value;
+
+      const conta = {
+        valor: document.getElementById("valor").value,
+        data_vencimento: document.getElementById("data_vencimento").value,
+        data_pagamento: document.getElementById("data_pagamento").value,
+        tipo_titulo_id: document.getElementById("tipo_titulo_id").value,
+        atualizado_por: document.getElementById("atualizado_por").value,
+        atualizado_em: document.getElementById("atualizado_em").value,
+        emprestimo_id: document.getElementById("emprestimo_id").value,
+        funcionario_id: document.getElementById("funcionario_id").value,
+        cliente_id: document.getElementById("cliente_id").value,
+        viagem_id: document.getElementById("viagem_id").value,
+        fornecedor_id: document.getElementById("fornecedor_id").value
+      };
+
+      const metodo = id ? "PUT" : "POST";
+      const url = id ? `${API_URL}/contas-pagar/${id}` : `${API_URL}/contas-pagar`;
+
+      fetch(url, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(conta)
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.mensagem);
+        limparCampos();
+        carregarContas();
+      })
+      .catch(() => {
+        alert("Erro ao salvar conta");
+      });
+    }
+
+    function selecionarConta(id) {
+      fetch(`${API_URL}/contas-pagar`)
+        .then(res => res.json())
+        .then(contas => {
+          const conta = contas.find(c => c.conta_pagar_id === id);
+
+          if (!conta) return;
+
+          document.getElementById("conta_pagar_id").value = conta.conta_pagar_id;
+          document.getElementById("valor").value = conta.valor || "";
+          document.getElementById("data_vencimento").value = conta.data_vencimento || "";
+          document.getElementById("data_pagamento").value = conta.data_pagamento || "";
+          document.getElementById("tipo_titulo_id").value = conta.tipo_titulo_id || "";
+          document.getElementById("atualizado_por").value = conta.atualizado_por || "";
+          document.getElementById("atualizado_em").value = conta.atualizado_em || "";
+          document.getElementById("emprestimo_id").value = conta.emprestimo_id || "";
+          document.getElementById("funcionario_id").value = conta.funcionario_id || "";
+          document.getElementById("cliente_id").value = conta.cliente_id || "";
+          document.getElementById("viagem_id").value = conta.viagem_id || "";
+          document.getElementById("fornecedor_id").value = conta.fornecedor_id || "";
+        });
+    }
+
+    function excluirConta() {
+      const id = document.getElementById("conta_pagar_id").value;
+
+      if (!id) {
+        alert("Selecione uma conta para excluir");
+        return;
+      }
+
+      if (confirm("Deseja excluir esta conta?")) {
+        fetch(`${API_URL}/contas-pagar/${id}`, {
+          method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.mensagem);
+          limparCampos();
+          carregarContas();
+        });
+      }
+    }
+
+    function limparCampos() {
+      document.getElementById("conta_pagar_id").value = "";
+      document.getElementById("valor").value = "";
+      document.getElementById("data_vencimento").value = "";
+      document.getElementById("data_pagamento").value = "";
+      document.getElementById("tipo_titulo_id").value = "";
+      document.getElementById("atualizado_por").value = "";
+      document.getElementById("atualizado_em").value = "";
+      document.getElementById("emprestimo_id").value = "";
+      document.getElementById("funcionario_id").value = "";
+      document.getElementById("cliente_id").value = "";
+      document.getElementById("viagem_id").value = "";
+      document.getElementById("fornecedor_id").value = "";
+    }
+
+    carregarContas();
+  </script>
+
+</body>
+</html>
