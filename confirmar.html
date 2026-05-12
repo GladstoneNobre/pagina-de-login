@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmação de Acesso</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+
+    .box {
+      background: white;
+      padding: 35px;
+      border-radius: 15px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .erro {
+      color: red;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h2>Confirmação</h2>
+    <p>Digite o usuário e senha de acesso ao sistema</p>
+
+    <input type="text" id="usuario" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
+
+    <button onclick="confirmarAcesso()">Confirmar</button>
+
+    <div id="mensagem" class="erro"></div>
+  </div>
+
+  <script>
+    function confirmarAcesso() {
+      const usuario = document.getElementById("usuario").value;
+      const senha = document.getElementById("senha").value;
+      const mensagem = document.getElementById("mensagem");
+
+      const usuarioCorreto = "admin";
+      const senhaCorreta = "1234";
+
+      if (usuario === usuarioCorreto && senha === senhaCorreta) {
+        window.location.href = "home.html";
+      } else {
+        mensagem.textContent = "Usuário ou senha incorretos";
+      }
+    }
+  </script>
+
+</body>
+</html>
